@@ -1,0 +1,43 @@
+frr version 8.5.6
+frr defaults traditional
+hostname R24
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+interface eth0
+ ip address 10.200.1.10/30
+ ip ospf area 0
+exit
+!
+interface eth1
+ ip address 10.200.1.14/30
+ ip ospf area 0
+exit
+!
+interface lo
+ ip address 10.200.24.1/24
+ ip ospf area 0
+exit
+!
+router bgp 200
+ no bgp ebgp-requires-policy
+ neighbor 10.200.21.1 remote-as 200
+ neighbor 10.200.21.1 update-source lo
+ neighbor 10.200.22.1 remote-as 200
+ neighbor 10.200.22.1 update-source lo
+ neighbor 10.200.23.1 remote-as 200
+ neighbor 10.200.23.1 update-source lo
+ !
+ address-family ipv4 unicast
+  network 10.200.1.8/30
+  network 10.200.1.12/30
+  neighbor 10.200.21.1 next-hop-self
+  neighbor 10.200.22.1 next-hop-self
+  neighbor 10.200.23.1 next-hop-self
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 10.200.24.1
+exit
+!

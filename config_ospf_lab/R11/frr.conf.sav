@@ -1,0 +1,55 @@
+frr version 8.5.6
+frr defaults traditional
+hostname R11
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+ip route 10.100.1.0/24 Null0
+!
+interface eth0
+ ip address 10.100.1.5/30
+ ip ospf area 0
+exit
+!
+interface eth1
+ ip address 10.100.1.1/30
+ ip ospf area 0
+exit
+!
+interface eth2
+ ip address 10.10.30.1/30
+exit
+!
+interface lo
+ ip address 10.100.11.1/24
+ ip ospf area 0
+exit
+!
+router bgp 100
+ bgp router-id 10.100.11.1
+ no bgp ebgp-requires-policy
+ neighbor 10.10.30.2 remote-as 300
+ neighbor 10.100.12.1 remote-as 100
+ neighbor 10.100.12.1 update-source lo
+ neighbor 10.100.13.1 remote-as 100
+ neighbor 10.100.13.1 update-source lo
+ neighbor 10.100.14.1 remote-as 100
+ neighbor 10.100.14.1 update-source lo
+ !
+ address-family ipv4 unicast
+  network 172.16.1.0/24
+  neighbor 10.10.30.2 route-map ACCEPT_ALL in
+  neighbor 10.10.30.2 route-map ACCEPT_ALL out
+  neighbor 10.100.12.1 next-hop-self
+  neighbor 10.100.13.1 next-hop-self
+  neighbor 10.100.14.1 next-hop-self
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 10.100.11.1
+exit
+!
+route-map ACCEPT_ALL permit 10
+exit
+!
