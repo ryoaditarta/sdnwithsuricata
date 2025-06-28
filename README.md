@@ -22,7 +22,7 @@ Switch sw1 dikonfigurasi untuk melakukan mirroring lalu lintas ke Suricata, sehi
 Gambar tersebut merupakan topologi simulasi jaringan dalam mininet beserta dengan konfigurasi IP interface, subnet, dan routing. Dalam simulasi yang akan dijalankan H1 bertindak sebagai penyerang dan SRV1 bertindak sebagai taget penyerangan. Dalam simulasi penyerangan SURICATA akan mendeteksi serangan tersebut dan akan membuat alert sehingga Ryu Controller dapat memblokir IP penyerang. 
 
 
-# Requierment system
+# Requierment Sistem
 
 Sebelum menjalankan sistem, pastikan sistem Anda memiliki prasyarat berikut:
 - **Ubuntu (Versi 22.04 LTS)**
@@ -45,6 +45,20 @@ cd sdnwithsuricata
 
 2. **Menjalankan Sistem:**
    - Pastikan anda sudah berada dalam direktori dan gunakan environment apabila diperlukan.
+   - Masukan aturan suricata yang berada pada /etc/suricata/rules/suricata.rules untuk mendeteksi serangan
+
+Berikut merupakan peraturan suricata.rules yang digunakan dalam percobaan ini:
+```bash
+# SYN Flood
+alert tcp any any -> any any (msg:"DOS SYN FLOOD Attack!"; flags:S; detection_filter:track by_src,count 50,seconds 1;sid:1008;)
+
+# ICMP Flood
+alert icmp any any -> any any (msg:"ICMP Flood Detected"; itype:8; detection_filter:track by_src, count 50, seconds 1; sid:1000003;)
+
+# ACK Flood
+alert tcp any any -> any any (msg:"Detected ACK Flood"; flags:A; detection_filter: track by_src, count 50, seconds 1; sid:101;)
+```
+
    - Jalankan perintah berikut dalam command prompt dan persiapkan 3 tab untuk menjalankan system. 
  
 Pertama, jalankan Ryu Controller pada tab pertama dengan perintah:
